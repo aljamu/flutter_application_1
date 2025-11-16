@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Namer App',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+          colorScheme: ColorScheme.fromSeed(seedColor: Color.fromRGBO(0, 255, 0, 1.0)),
         ),
         home: MyHomePage(),
       ),
@@ -51,19 +51,56 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     //Widget tracks changes to the apps current state
     var appState = context.watch<MyAppState>();
+    var pair = appState.current; 
 
     return Scaffold(
-      body: Column(
-        children: [
-          Text('A random AWESOME idea:'), 
-          Text(appState.current.asLowerCase),
-          ElevatedButton(
-            onPressed: () {
-              appState.getNext();
-            },
-            child: Text('Next'),
+      body: Center(
+        child: Column(
+          //vertical alignment
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            BigCard(pair: pair),
+            //SizedBox is commonly used to create visual gaps (like padding)
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                appState.getNext();
+              },
+              child: Text('Next'),
+            ),
+            ],
+        ),
+      ),
+    );
+  }
+}
+
+class BigCard extends StatelessWidget {
+  const BigCard({
+    super.key,
+    required this.pair,
+  });
+
+  final WordPair pair;
+
+  @override
+  Widget build(BuildContext context) {
+    //custom theme and style
+    final theme = Theme.of(context);
+    final style = theme.textTheme.displayMedium!.copyWith(
+      color: theme.colorScheme.onPrimary,
+    );
+
+    return Card(
+      color: theme.colorScheme.primary,
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Text(
+          pair.asLowerCase, 
+          style: style,
+          //semanticsLabel for accessibility, e.g. screenreaders.
+          semanticsLabel: "${pair.first} ${pair.second}",
           ),
-          ],
       ),
     );
   }
