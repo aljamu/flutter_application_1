@@ -1,0 +1,45 @@
+INTRODUCTION TO FLUTTER:
+
+- Flutter is a UI-Framework
+- uses Dart as programming language (OOP)
+- an flutter app is composed of so called WIDGETS
+- Layouts are created programmatically
+- With State Management states are shared between widgets (MVVM)
+
+===========================================================================================================
+
+INTRODUCTION TO WIDGETS:
+
+- building blocks of Flutter UI: "Everything is a Widget"
+- each Widget is an immutable (= unable to be changed) declaration of part of the user interface
+-> are used to describe all aspects of a user interface, including physical aspects such as TEXT and BUTTONS to lay out effects like padding and alignment
+- form a hierarchy. Widgets get nested inside eachother. Root Widget -> (Parent Widget -> (Child W. -> Child of Child W.))
+-> typically composed of many other small, single-purpose widgets that combine to produce powerful effects
+    e.g.: The UTILITY WIDGET => Container has nested LAYOUT WIDGETS:
+    (Don't have visual representation, they only control some aspect of another widgets layout)
+    => Padding, 
+    => Alignment, 
+    => Row, 
+    => Column, 
+    => Grid
+
+
+Building widgets:
+- all widgets must have a build method and must return a widget
+- To create a user interface in Flutter, you override the build method on widget objects.
+- The framework calls the build method when this widget is created and when the dependencies of this widget change (e.g. state changed)
+
+
+Widget State:
+- The framework introduces two major classes of widget: stateful and stateless widgets
+- STATELESS WIDGET: Widgets that have properties that dont change over time are subclasses of StatelessWidget (=> no mutable state). E.g. Padding, Text, ...
+- STATEFUL WIDGET: if unique characteristics of a widget need to change based on USER INTERACTION or other factors. E.g. Counter increases on button click.
+--> When that value changes, the widget needs to be rebuilt to update its part of the UI. and (because the widget itself is immutable) they 
+        store mutable state in a separate class that subclasses State. Their User Interface is built through their State object
+
+===========================================================================================================
+
+Layouts:
+https://docs.flutter.dev/get-started/fundamentals/layout
+
+
