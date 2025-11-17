@@ -1,6 +1,5 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -19,7 +18,9 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Namer App',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Color.fromRGBO(0, 255, 0, 1.0)),
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Color.fromRGBO(0, 255, 0, 1.0),
+          ),
         ),
         home: MyHomePage(),
       ),
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
 class MyAppState extends ChangeNotifier {
   var current = WordPair.random();
 
-  void getNext(){
+  void getNext() {
     current = WordPair.random();
     //notifyListers() is a method of ChangeNotifier that ensures anyone watching MyAppState is notified.
     notifyListeners();
@@ -67,21 +68,18 @@ class MyHomePage extends StatefulWidget {
 
 //private classes are written with an underscore for the compiler
 class _MyHomePageState extends State<MyHomePage> {
-  
-  var selectedIndex = 0;  
+  var selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     Widget page;
     switch (selectedIndex) {
-    case 0:
-      page = GeneratorPage();
-      break;
-    case 1:
-      page = Placeholder();
-      break;
-    default:
-      throw UnimplementedError('no widget for $selectedIndex');
+      case 0:
+        page = GeneratorPage();
+      case 1:
+        page = FavortiesPage();
+      default:
+        throw UnimplementedError('no widget for $selectedIndex');
     }
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -104,9 +102,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   selectedIndex: selectedIndex,
                   onDestinationSelected: (value) {
                     //similarly to notifyListeners(), setState makes sure to update the UI on State change
-                      setState(() {
-                        selectedIndex = value;
-                      });
+                    setState(() {
+                      selectedIndex = value;
+                    });
                   },
                 ),
               ),
@@ -117,10 +115,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ],
-            
           ),
         );
-      }
+      },
     );
   }
 }
@@ -170,10 +167,7 @@ class GeneratorPage extends StatelessWidget {
 }
 
 class BigCard extends StatelessWidget {
-  const BigCard({
-    super.key,
-    required this.pair,
-  });
+  const BigCard({super.key, required this.pair});
 
   final WordPair pair;
 
@@ -190,12 +184,31 @@ class BigCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Text(
-          pair.asLowerCase, 
+          pair.asLowerCase,
           style: style,
           //semanticsLabel for accessibility, e.g. screenreaders.
           semanticsLabel: "${pair.first} ${pair.second}",
-          ),
+        ),
       ),
+    );
+  }
+}
+
+class FavortiesPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    var favorites = appState.favorites;
+
+    if (favorites.isEmpty) {
+      return Center(child: Text('No favorites yet.'));
+    }
+
+    return ListView(
+      children: [
+        for (var fav in favorites)
+          ListTile(leading: Icon(Icons.favorite), title: Text(fav.toString())),
+      ],
     );
   }
 }
