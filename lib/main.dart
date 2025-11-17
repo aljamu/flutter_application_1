@@ -1,5 +1,6 @@
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -54,54 +55,115 @@ class MyAppState extends ChangeNotifier {
   }
 }
 
-class MyHomePage extends StatelessWidget {
+//Staeful: This class extends State, and can therefore manage its own values. (It can change itself.)
+/*
+- you might not want to add each state into the MyAppState. Some should/could remain inside their own classes.
+-> If a state is only used for the widget itself, it should remain within a stateful Widget.
+*/
+class MyHomePage extends StatefulWidget {
   @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
 
-  //every widget defines a build()-method ->automatically called when widgets circumstances changes
-  // ->Every build()- Method must return a widget or a nested tree of widgets
+//private classes are written with an underscore for the compiler
+class _MyHomePageState extends State<MyHomePage> {
+  
+  var selectedIndex = 0;  
+
+  @override
   Widget build(BuildContext context) {
-    //Widget tracks changes to the apps current state
-    var appState = context.watch<MyAppState>();
-    var pair = appState.current; 
+    Widget page;
+    switch (selectedIndex) {
+    case 0:
+      page = GeneratorPage();
+      break;
+    case 1:
+      page = Placeholder();
+      break;
+    default:
+      throw UnimplementedError('no widget for $selectedIndex');
+    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Scaffold(
+          body: Row(
+            children: [
+              SafeArea(
+                child: NavigationRail(
+                  extended: constraints.maxWidth >= 600,
+                  destinations: [
+                    NavigationRailDestination(
+                      icon: Icon(Icons.home),
+                      label: Text('Home'),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.favorite),
+                      label: Text('Favorites'),
+                    ),
+                  ],
+                  selectedIndex: selectedIndex,
+                  onDestinationSelected: (value) {
+                    //similarly to notifyListeners(), setState makes sure to update the UI on State change
+                      setState(() {
+                        selectedIndex = value;
+                      });
+                  },
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                  child: page,
+                ),
+              ),
+            ],
+            
+          ),
+        );
+      }
+    );
+  }
+}
 
-        IconData icon;
+class GeneratorPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    var appState = context.watch<MyAppState>();
+    var pair = appState.current;
+
+    IconData icon;
     if (appState.favorites.contains(pair)) {
       icon = Icons.favorite;
     } else {
       icon = Icons.favorite_border;
     }
 
-    return Scaffold(
-      body: Center(
-        child: Column(
-          //vertical alignment
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            BigCard(pair: pair),
-            //SizedBox is commonly used to create visual gaps (like padding)
-            SizedBox(height: 10),
-            Row(
-              //tell Row not to take away all horizontal space
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    appState.toggleFavorite();
-                  },
-                  icon: Icon(icon),
-                  label: Text("like")
-                ),
-                SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    appState.getNext();
-                  },
-                  child: Text('Next'),
-                ),
-              ],
-            ),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          BigCard(pair: pair),
+          SizedBox(height: 10),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () {
+                  appState.toggleFavorite();
+                },
+                icon: Icon(icon),
+                label: Text('Like'),
+              ),
+              SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: () {
+                  appState.getNext();
+                },
+                child: Text('Next'),
+              ),
             ],
-        ),
+          ),
+        ],
       ),
     );
   }
